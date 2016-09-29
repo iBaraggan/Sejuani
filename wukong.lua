@@ -1,10 +1,10 @@
-if GetObjectName(myHero) ~= "Wukong" then return end
+if GetObjectName(myHero) ~= "MonkeyKing" then return end
 
 require('OpenPredict')
 
 print("SejuaniTopper // By:ekkekk")
 
-local WukongMenu = Menu("SejuaniTopper", "SejuaniTopper")
+local WukongMenu = Menu("Wukong", "Wukong")
 
   WukongMenu:Menu("Combo", "Combo")
   WukongMenu.Combo:Boolean("useQ", "Use Q", true)
@@ -14,39 +14,58 @@ local WukongMenu = Menu("SejuaniTopper", "SejuaniTopper")
   WukongMenu.Combo:Boolean("useTiamat", "Use Tiamat", true)
   WukongMenu.Combo:Boolean("useTitanic", "Use Titanic Hydra", true)
 
+  WukongMenu:SubMenu("Combo,Combo")
+  WukongMenu.Combo:Boolean("Q", "Use Q in Combo", true)
+  WukongMenu.Combo:Boolean("W", "Use W in Combo", true)
+  WukongMenu.Combo:Boolean("E", "Use E in Combo", true)
+  WukongMenu.Combo:Boolean("R", "Use R in Combo", true)
+
 OnTick(function()
 
     if IOW:Mode() == "Combo" then
-       
-        local target = GetCurrentTarget() 
-       
-        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_Q) == READY and WukongMenu.Combo.useQ:Value() then
-          CastSpell(_Q) 
-        end
-        
-        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_W) == READY and WukongMenu.Combo.useW:Value() then
-          CastSpell(_W)
-        end
-        
-        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_E) == READY and WukongMenu.Combo.useE:Value() then
-          CastTargetSpell(target,_E)
-        end
-        
-        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_R) == READY and WukongMenu.Combo.useR:Value() then
-          CastTargetSpell(target_R)
-        end
 
-         if GetItemSlot(myHero, 3077) > 0 and IsReady(GetItemSlot(myHero, 3077)) and WukongMenu.Combo.useTiamat:Value() then
-       CastSpell(GetItemSlot(myHero, 3077))
+    if WukongMenu.ComboMode.EQW:Value() then
+      
+      if WukongMenu.Combo.E:Value() and Ready(_E) and ValidTarget(target, ERange) then
+        CastTargetSpell(target, _E)
       end
-      if GetItemSlot(myHero, 3074) > 0 and IsReady(GetItemSlot(myHero, 3074)) and WukongMenu.Combo.useHydra:Value() then
-       CastSpell(GetItemSlot(myHero, 3074))
+
+      if WukongMenu.Combo.Q:Value() and Ready(_Q) and ValidTarget(target, QRange) then
+        CastSpell(_Q)
+        if ValidTarget(target, QRange) then
+          AttackUnit(target)
+        end
       end
-    if GetItemSlot(myHero, 3748) > 0 and IsReady(GetItemSlot(myHero, 3748)) and WukongMenu.Combo.useTitanic:Value() then
-       CastSpell(GetItemSlot(myHero, 3748))
-      end 
+
+      if WukongMenu.Combo.W:Value() and Ready(_W) and ValidTarget(target, WRange) then
+        CastSpell(_W)
+      end
     end
-end)
+
+    
+    if WukongMenu.ComboMode.EWQ:Value() then
+      
+      if WukongMenu.Combo.E:Value() and Ready(_E) and ValidTarget(target, ERange) then
+        CastTargetSpell(target, _E)
+      end
+
+      if WukongMenu.Combo.W:Value() and Ready(_W) and ValidTarget(target, WRange) then
+        CastSpell(_W)
+      end
+
+      if WukongMenu.Combo.Q:Value() and Ready(_Q) and ValidTarget(target, QRange) then
+        CastSpell(_Q)
+        if ValidTarget(target, QRange) then
+          AttackUnit(target)
+        end
+      end
+    end
+
+    if WukongMenu.Combo.R:Value() and Ready(_R) and ValidTarget(target, RRange) then
+      CastSpell(_R)
+    end
+
+  end
   
 WukongMenu:SubMenu("SkinChanger", "SkinChanger")
   skinMeta = {["WukongMenu"] = {"Classic", "Volcanic", "General", "Jade Dragon", "Underworld", "Radiant"}}
@@ -54,3 +73,4 @@ WukongMenu:SubMenu("SkinChanger", "SkinChanger")
         HeroSkinChanger(myHero, model - 1) print(skinMeta[myHero.charName][model] .." ".. myHero.charName .. " Loaded!") 
     end,
 true)
+  print("Wukong feito por mim")
