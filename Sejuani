@@ -1,0 +1,64 @@
+if GetObjectName(myHero) ~= "Sejuani" then return end
+
+require('OpenPredict')
+
+print("SejuaniTopper // By:ekkekk")
+
+local SkarnerE = {delay = 0.25, speed = 1500, width = 70, range = 1000} 
+
+local SejuaniMenu = Menu("SejuaniTopper", "SejuaniTopper")
+
+  SejuaniMenu:Menu("Combo", "Combo")
+  SejuaniMenu.Combo:Boolean("useQ", "Use Q", true)
+  SejuaniMenu.Combo:Boolean("useW", "Use W", true)
+  SejuaniMenu.Combo:Boolean("useE", "Use E", true)
+  SejuaniMenu.Combo:Boolean("useR", "Use R", true)
+  SejuaniMenu.Combo:Boolean("useTiamat", "Use Tiamat", true)
+  SejuaniMenu.Combo:Boolean("useTitanic", "Use Titanic Hydra", true)
+
+OnTick(function()
+
+    if IOW:Mode() == "Combo" then
+       
+        local target = GetCurrentTarget() 
+         
+        if ValidTarget(target,SejuaniQ.range) and CanUseSpell(myHero,_Q) == READY and SejuaniMenu.Combo.useQ:Value() then
+                        
+            local ePred = GetPrediction(target,SejuaniQ)
+                         
+            if ePred and ePred.hitChance >= 0.25 then 
+                CastSkillShot(_Q,ePred.castPos)
+            end
+        end
+       
+        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_Q) == READY and SejuaniMenu.Combo.useQ:Value() then
+          CastSpell(_Q) 
+        end
+        
+        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_W) == READY and SejuaniMenu.Combo.useW:Value() then
+          CastSpell(_W)
+        end
+        
+        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_E) == READY and SejuaniMenu.Combo.useE:Value() then
+          CastTargetSpell(target,_E)
+        end
+        
+        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_R) == READY and SejuaniMenu.Combo.useR:Value() then
+          CastTargetSpell(target,_R)
+        end
+
+         if GetItemSlot(myHero, 3077) > 0 and IsReady(GetItemSlot(myHero, 3077)) and SejuaniMenu.Combo.useTiamat:Value() then
+       CastSpell(GetItemSlot(myHero, 3077))
+      end
+    if GetItemSlot(myHero, 3748) > 0 and IsReady(GetItemSlot(myHero, 3748)) and SejuaniMenu.Combo.useTitanic:Value() then
+       CastSpell(GetItemSlot(myHero, 3748))
+      end 
+    end
+end)
+  
+SejuaniMenu:SubMenu("SkinChanger", "SkinChanger")
+  skinMeta = {["Sejuani"] = {"Classic", "Sabretusk", "Darkrider", "Traditional", "Bear Cavalry", "Poro Rider", "Beast Hunter"}}
+  SejuaniMenu.SkinChanger:DropDown('skin', myHero.charName.. " Skins", 1, skinMeta[myHero.charName],function(model)
+        HeroSkinChanger(myHero, model - 1) print(skinMeta[myHero.charName][model] .." ".. myHero.charName .. " Loaded!") 
+    end,
+true)
