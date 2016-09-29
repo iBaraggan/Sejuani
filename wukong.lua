@@ -21,7 +21,7 @@ OnTick(function()
         local target = GetCurrentTarget() 
        
         if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_Q) == READY and WukongMenu.Combo.useQ:Value() then
-          CastTargetSpell(target,_Q) 
+          CastSpell(_Q) 
         end
         
         if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_W) == READY and WukongMenu.Combo.useW:Value() then
@@ -33,7 +33,7 @@ OnTick(function()
         end
         
         if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_R) == READY and WukongMenu.Combo.useR:Value() then
-          CastSpell(_R)
+          CastTargetSpell(target_R)
         end
 
          if GetItemSlot(myHero, 3077) > 0 and IsReady(GetItemSlot(myHero, 3077)) and WukongMenu.Combo.useTiamat:Value() then
