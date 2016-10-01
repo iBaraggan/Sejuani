@@ -1,67 +1,590 @@
-if GetObjectName(myHero) ~= "Wukong" then return end
+if GetObjectName(myHero) ~= "MonkeyKing" then return end
+
+local ver = "0.02"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
-        PrintChat("New version found! " .. data)
-        PrintChat("Downloading update, please wait...")
-        DownloadFileAsync("https://raw.githubusercontent.com/iBaraggan/Sejuani/master/wukong.lua", SCRIPT_PATH .. "Wukong.lua", function() PrintChat("Update Complete, please 2x F6!") return end)
-    else
-        PrintChat("No updates found!")
+        print("New version found! " .. data)
+        print("Downloading update, please wait...")
+        DownloadFileAsync("https://raw.githubusercontent.com/Toshibiotro/stuff/master/EternalWukong.lua", SCRIPT_PATH .. "EternalWukong.lua", function() print("Update Complete, please 2x F6!") return end)
     end
 end
-PrintChat("eawewae")
 
-require('OpenPredict')
+GetWebResultAsync("https://raw.githubusercontent.com/Toshibiotro/stuff/master/EternalWukong.version", AutoUpdate)
 
-print("SejuaniTopper // By:ekkekk")
+if not FileExist(COMMON_PATH.. "Analytics.lua") then
+  DownloadFileAsync("https://raw.githubusercontent.com/LoggeL/GoS/master/Analytics.lua", COMMON_PATH .. "Analytics.lua", function() end)
+end
 
-local WukongMenu = Menu("SejuaniTopper", "SejuaniTopper")
+require("Analytics")
 
-  WukongMenu:Menu("Combo", "Combo")
-  WukongMenu.Combo:Boolean("useQ", "Use Q", true)
-  WukongMenu.Combo:Boolean("useE", "Use E", true)
-  WukongMenu.Combo:Boolean("useR", "Use R", true)
-  WukongMenu.Combo:Boolean("useHydra", "Use Ravenous Hydra", true)
-  WukongMenu.Combo:Boolean("useTiamat", "Use Tiamat", true)
-  WukongMenu.Combo:Boolean("useTitanic", "Use Titanic Hydra", true)
+Analytics("Eternal Wukong", "Toshibiotro", true)
+
+local WMenu = Menu("W", "Wukong")
+WMenu:SubMenu("C", "Combo")
+WMenu.C:Boolean("CQ", "Use Q", true)
+WMenu.C:DropDown("CQC", "Q Settings", 1, {"Normal", "AA Reset"})
+WMenu.C:Boolean("CW", "Use W", true)
+WMenu.C:Slider("CWC", "HP To W", 75, 0, 100, 1)
+WMenu.C:Boolean("CE", "Use E", true)
+WMenu.C:Boolean("CR", "Use R", true)
+WMenu.C:Slider("CMM", "Min Mana To Combo", 20, 0, 100, 1)
+WMenu.C:Boolean("CRC", "Stick To Target With R", true)
+WMenu.C:Boolean("CTH", "Use T Hydra", true)
+WMenu.C:Boolean("CRH", "Use R Hydra", true)
+WMenu.C:Boolean("CYGB", "Use GhostBlade", true)
+
+WMenu:SubMenu("H", "Harass")
+WMenu.H:Boolean("HQ", "Use Q", true)
+WMenu.H:DropDown("HQC", "Q Settings", 1, {"Normal", "AA Reset"})
+WMenu.H:Boolean("HW", "Use W", true)
+WMenu.H:Slider("HWC", "HP To Use W", 75, 0, 100, 1)
+WMenu.H:Boolean("HE", "Use E", true)
+WMenu.H:Slider("HMM", "Min Mana To Harass", 40, 0, 100, 1)
+
+WMenu:SubMenu("LH", "LastHit")
+WMenu.LH:Boolean("LHQ", "Use Q", true)
+WMenu.LH:Boolean("LHE", "Use E", true)
+
+WMenu:SubMenu("LC", "LaneClear")
+WMenu.LC:Boolean("LCQ", "Use Q", true)
+WMenu.LC:Boolean("LCW", "Use W", true)
+WMenu.LC:Boolean("LCE", "Use E", true)
+WMenu.LC:Slider("LCMM", "Min Mana To LaneClear", 40, 0, 100, 1)
+WMenu.LC:Boolean("LCTH", "Use T Hydra", true)
+WMenu.LC:Boolean("LCRH", "Use R Hydra", true)
+
+WMenu:SubMenu("JC", "JungleClear")
+WMenu.JC:Boolean("JCQ", "Use Q", true)
+WMenu.JC:Boolean("JCW", "Use W", true)
+WMenu.JC:Boolean("JCE", "Use E", true)
+WMenu.JC:Slider("JCMM", "Min Mana To Jungle", 50, 0, 100, 1)	
+WMenu.JC:Boolean("JCTH", "Use T Hydra", true)
+WMenu.JC:Boolean("JCRH", "Use R Hydra", true)
+
+WMenu:SubMenu("KS", "KillSteal")
+WMenu.KS:Boolean("KSQ", "Use Q", true)
+WMenu.KS:Boolean("KSE", "Use E", true)
+
+WMenu:SubMenu("M", "Misc")
+WMenu.M:DropDown("AutoLevel", "AutoLevel", 1, {"Off", "QEW", "QWE", "WQE", "WEQ", "EQW", "EWQ"})
+WMenu.M:Boolean("AR", "Auto R", true)
+WMenu.M:Slider("ARC", "Min Enemies To Auto R", 3, 1, 6, 1)
+WMenu.M:Boolean("AW", "Auto W", true)
+WMenu.M:Slider("AWC", "Min HP To W", 20, 0, 100, 1)
+WMenu.M:Boolean("AI", "Auto Ignite", true)
+WMenu.M:Boolean("QSS", "Use QSS", true)
+WMenu.M:Slider("QSSC", "HP To QSS", 90, 0, 100, 1)
+WMenu.M:Boolean("DAAS", "Dont Attack While Invis", true)
+WMenu.M:Boolean("QT", "Use Q On Towers", true)
+
+WMenu:SubMenu("AutoSmite", "Auto Smite")
+WMenu.AutoSmite:Boolean("ASG", "Smite Gromp", false)
+WMenu.AutoSmite:Boolean("ASB", "Smite Blue", true)
+WMenu.AutoSmite:Boolean("ASR", "Smite Red", false)
+WMenu.AutoSmite:Boolean("ASK", "Smite Big Krug", false)
+WMenu.AutoSmite:Boolean("ASD", "Smite Dragon", true)
+WMenu.AutoSmite:Boolean("ASBA", "Smite Baron", true)
+
+WMenu:SubMenu("E", "Escape")
+WMenu.E:Boolean("EE", "Use E", true)
+WMenu.E:Boolean("EYGB", "Use GhostBlade")
+WMenu.E:KeyBinding("EK", "Escape Key", string.byte("G"))
+
+WMenu:SubMenu("D", "Drawings")
+WMenu.D:Boolean("DAA", "Draw AA Range", true)
+WMenu.D:Boolean("DQ", "Draw Q Range", true)
+WMenu.D:Boolean("DE", "Draw E Range", true)
+WMenu.D:Boolean("DR", "Draw R Range", true)
+WMenu.D:Boolean("DD", "Draw Damage", true)
+
+WMenu:SubMenu("SkinChanger", "SkinChanger")
+
+local skinMeta = {["MonkeyKing"] = {"Classic", "Volcanic", "General", "Jade Dragon", "Underworld", "Radiant"}}
+WMenu.SkinChanger:DropDown('skin', myHero.charName.. " Skins", 1, skinMeta[myHero.charName], HeroSkinChanger, true)
+WMenu.SkinChanger.skin.callback = function(model) HeroSkinChanger(myHero, model - 1) print(skinMeta[myHero.charName][model] .." ".. myHero.charName .. " Loaded!") end	
+
+local spellorder1 = {_Q, _E, _W, _Q, _Q, _R, _Q, _E, _Q, _E, _R, _E, _E, _W, _W, _R, _W, _W}
+local spellorder2 = {_Q, _W, _E, _Q, _Q, _R, _Q, _W, _Q, _W, _R, _W, _W, _E, _E, _R, _E, _E}
+local spellorder3 = {_W, _Q, _E, _W, _W, _R, _W, _Q, _W, _Q, _R, _Q, _Q, _E, _E, _R, _E, _E}
+local spellorder4 = {_W, _E, _Q, _W, _W, _R, _W, _E, _W, _E, _R, _E, _E, _Q, _Q, _R, _Q, _Q}
+local spellorder5 = {_E, _Q, _W, _E, _E, _R, _E, _Q, _E, _Q, _R, _Q, _Q, _W, _W, _R, _W, _W}
+local spellorder6 = {_E, _W, _Q, _E, _E, _R, _E, _W, _E, _W, _R, _W, _W, _Q, _Q, _R, _Q, _Q}
+
+local target = GetCurrentTarget()
+function QDmg(unit) return CalcDamage(myHero, unit, myHero.totalDamage + ((30 * GetCastLevel(myHero, _Q)) + (myHero. totalDamage * 0.1)), 0) end
+function EDmg(unit) return CalcDamage(myHero, unit, 15 + 45 * GetCastLevel(myHero, _E) + GetBonusDmg(myHero) * 0.8) end
+local AARange = 175 + GetHitBox(myHero)
+local ERange = GetCastRange(myHero, _E) + GetHitBox(myHero)
+local QRange = GetCastRange(myHero, _Q) + GetHitBox(myHero)
+local RRange = GetCastRange(myHero, _R) + GetHitBox(myHero)
+function RDmg(unit) return CalcDamage(myHero, unit, ((-70 + 90 * GetCastLevel(myHero, _R)) + (myHero.totalDamage * 1.1)) * 4, 0) end
+local TH = nil
+local T = nil
+local RH = nil
+local YGB = nil
+local CCType = {[5] = "Stun", [8] = "Taunt", [9] = "Polymorph", [11] = "Snare", [21] = "Fear", [22] = "Charm", [24] = "Suppression"}
+
+function Mode()
+    if _G.IOW_Loaded and IOW:Mode() then
+        return IOW:Mode()
+        elseif _G.PW_Loaded and PW:Mode() then
+        return PW:Mode()
+        elseif _G.DAC_Loaded and DAC:Mode() then
+        return DAC:Mode()
+        elseif _G.AutoCarry_Loaded and DACR:Mode() then
+        return DACR:Mode()
+        elseif _G.SLW_Loaded and SLW:Mode() then
+        return SLW:Mode()
+    end
+end
+
+function ResetAA()
+    if _G.IOW_Loaded then
+        return IOW:ResetAA()
+        elseif _G.PW_Loaded then
+        return PW:ResetAA()
+        elseif _G.DAC_Loaded then
+        return DAC:ResetAA()
+        elseif _G.AutoCarry_Loaded then
+        return DACR:ResetAA()
+        elseif _G.SLW_Loaded then
+        return SLW:ResetAA()
+    end
+end
+
+function BlockAttack(boolean)
+	if _G.IOW_Loaded then
+		return IOW.attacksEnabled == (boolean)
+		elseif _G.PW_Loaded then
+        return PW.attacksEnabled == (boolean)
+        elseif _G.DAC_Loaded then
+        return DAC.attacksEnabled == (boolean)
+        elseif _G.AutoCarry_Loaded then
+        return DACR.attacksEnabled == (boolean)
+        elseif _G.SLW_Loaded then
+        return SLW.attacksEnabled == (boolean)
+    end
+end
 
 OnTick(function()
+	
+	target = GetCurrentTarget()
+	TH = GetItemSlot(myHero, 3748)
+	T = GetItemSlot(myHero, 3077)
+	RH = GetItemSlot(myHero, 3074)
+	YGB = GetItemSlot(myHero, 3142)
+	local Invis = GotBuff(myHero, "monkeykingdecoystealth")
+	local UltOn = GotBuff(myHero, "MonkeyKingSpinToWin")
+	local THBuff = GotBuff(myHero, "itemtitanichydracleavebuff")
+	local IDamage = (50 + (20 * GetLevel(myHero)))
+	local smd = (({[1]=390,[2]=410,[3]=430,[4]=450,[5]=480,[6]=510,[7]=540,[8]=570,[9]=600,[10]=640,[11]=680,[12]=720,[13]=760,[14]=800,[15]=850,[16]=900,[17]=950,[18]=1000})[GetLevel(myHero)])
+	
+	if Invis > 0 and WMenu.M.DAAS:Value() then BlockAttack(true) end
+	if Invis < 1 then BlockAttack(false) end
+	
+	if UltOn > 0 then BlockAttack(true) end
+	if UltOn < 1 then BlockAttack(false) end
+	
+	--AutoLevel
+	if GetLevelPoints(myHero) > 0 then
+		if WMenu.M.AutoLevel:Value() == 2 then
+			LevelSpell(spellorder1[GetLevel(myHero) + 1 - GetLevelPoints(myHero)])
+			elseif WMenu.M.AutoLevel:Value() == 3 then
+			LevelSpell(spellorder2[GetLevel(myHero) + 1 - GetLevelPoints(myHero)])
+			elseif WMenu.M.AutoLevel:Value() == 4 then
+			LevelSpell(spellorder3[GetLevel(myHero) + 1 - GetLevelPoints(myHero)])
+			elseif WMenu.M.AutoLevel:Value() == 5 then
+			LevelSpell(spellorder4[GetLevel(myHero) + 1 - GetLevelPoints(myHero)])
+			elseif WMenu.M.AutoLevel:Value() == 6 then
+			LevelSpell(spellorder5[GetLevel(myHero) + 1 - GetLevelPoints(myHero)])
+			elseif WMenu.M.AutoLevel:Value() == 7 then
+			LevelSpell(spellorder6[GetLevel(myHero) + 1 - GetLevelPoints(myHero)])
+		end
+	end
+	
+	-- Combo
+	if Mode() == "Combo" then
+		if WMenu.C.CQ:Value() and WMenu.C.CQC:Value() == 1 and Ready(_Q) and ValidTarget(target, QRange) then
+			if GetPercentMP(myHero) >= WMenu.C.CMM:Value() then
+				CastSpell(_Q)
+			end
+		end
+		
+		if WMenu.C.CE:Value() and Ready(_E) and ValidTarget(target, ERange) and GetDistance(target) > AARange then
+			if GetPercentMP(myHero) >= WMenu.C.CMM:Value() then
+				CastTargetSpell(target, _E)
+			end
+		end
+		
+		if WMenu.C.CW:Value() and Ready(_W) and not Ready(_Q) and not Ready(_E) and ValidTarget(target, 175) then
+			if GetPercentMP(myHero) >= WMenu.C.CMM:Value() and GetPercentHP(myHero) <= WMenu.C.CWC:Value() then
+				CastSpell(_W)
+			end	
+		end
+		
+		if WMenu.C.CR:Value() and UltOn < 1 and Ready(_R) and not Ready(_E) and not Ready(_Q) and not Ready(TH) and not Ready(T) and not Ready(RH) and THBuff < 1 and ValidTarget(target, RRange) and GetPercentHP(target) >= 25 then
+			CastSpell(_R)
+		end
+		
+		if WMenu.C.CRC:Value() and UltOn > 0 and ValidTarget(target, 650) then
+			MoveToXYZ(target)
+		end
 
-    if IOW:Mode() == "Combo" then
-       
-        local target = GetCurrentTarget() 
-       
-        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_Q) == READY and WukongMenu.Combo.useQ:Value() then
-          CastTargetSpell(target,_Q) 
-        end
-        
-        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_W) == READY and WukongMenu.Combo.useW:Value() then
-          CastSpell(_W)
-        end
-        
-        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_E) == READY and WukongMenu.Combo.useE:Value() then
-          CastTargetSpell(target,_E)
-        end
-        
-        if ValidTarget(target,GetRange(myHero) + GetHitBox(target)) and CanUseSpell(myHero,_R) == READY and WukongMenu.Combo.useR:Value() then
-          CastSpell(_R)
-        end
+		if WMenu.C.CYGB:Value() and YGB > 0 and Ready(YGB) and ValidTarget(target, 700) then
+			CastSpell(YGB)
+		end
+	end
+	
+	-- Harass
+	if Mode() == "Harass" then
+		if WMenu.C.CQ:Value() and WMenu.H.HQC:Value() == 1 and Ready(_Q) and ValidTarget(target, QRange) then
+			if GetPercentMP(myHero) >= WMenu.H.HMM:Value() then
+				CastSpell(_Q)
+			end	
+		end	
+	
+		if WMenu.H.HE:Value() and Ready(_E) and ValidTarget(target, ERange) then
+			if GetPercentMP(myHero) >= WMenu.H.HMM:Value() then
+				CastTargetSpell(target, _E)
+			end
+		end
+		
+		if WMenu.H.HW:Value() and Ready(_W) and not Ready(_Q) and not Ready(_E) and ValidTarget(target, 175) then
+			if GetPercentMP(myHero) >= WMenu.H.HMM:Value() and GetPercentHP(myHero) <= WMenu.H.HEC:Value() then
+				CastSpell(_W)
+			end
+		end
+	end		
 
-         if GetItemSlot(myHero, 3077) > 0 and IsReady(GetItemSlot(myHero, 3077)) and WukongMenu.Combo.useTiamat:Value() then
-       CastSpell(GetItemSlot(myHero, 3077))
-      end
-      if GetItemSlot(myHero, 3074) > 0 and IsReady(GetItemSlot(myHero, 3074)) and WukongMenu.Combo.useHydra:Value() then
-       CastSpell(GetItemSlot(myHero, 3074))
-      end
-    if GetItemSlot(myHero, 3748) > 0 and IsReady(GetItemSlot(myHero, 3748)) and WukongMenu.Combo.useTitanic:Value() then
-       CastSpell(GetItemSlot(myHero, 3748))
-      end 
-    end
+	--LaneClear
+	if Mode() == "LaneClear" then
+		for _,minion in pairs(minionManager.objects) do
+			if GetTeam(minion) == MINION_ENEMY then
+				if WMenu.LC.LCW:Value() and Ready(_W) and ValidTarget(minion, AARange) and MinionsAround(minion, 175, MINION_ENEMY) > 2 then
+					if GetPercentMP(myHero) >= WMenu.LC.LCMM:Value() then
+						CastSpell(_W)
+					end	
+				end
+				
+				if WMenu.LC.LCE:Value() and Ready(_E) and ValidTarget(minion, ERange) and MinionsAround(minion, 187.5, MINION_ENEMY) > 1 then
+					if GetPercentMP(myHero) >= WMenu.LC.LCMM:Value() then
+						CastTargetSpell(minion, _E)
+					end	
+				end
+			end
+			
+			if GetTeam(minion) == 300 then
+				if WMenu.JC.JCE:Value() and Ready(_E) and ValidTarget(minion, ERange) and not GetObjectName(minion):lower():find("mini") then
+					if GetPercentMP(myHero) >= WMenu.JC.JCMM:Value() then
+						CastTargetSpell(minion, _E)
+					end	
+				end
+			end
+		end
+	end
+	
+	--LastHit
+	if Mode() == "LastHit" then
+		for _,minion in pairs(minionManager.objects) do
+			if WMenu.LH.LHQ:Value() and Ready(_Q) and ValidTarget(minion, QRange) and GetDistance(myHero, minion) > AARange then
+				if GetCurrentHP(minion) < QDmg(minion) then
+					CastSpell(_Q)
+				end	
+			end
+			
+			if WMenu.LH.LHE:Value() and Ready(_E) and ValidTarget(minion, ERange) and GetDistance(myHero, minion) > AARange then
+				if GetCurrentHP(minion) < EDmg(minion) then
+					CastTargetSpell(minion, _E)
+				end
+			end
+		end
+	end				
+
+	-- KillSteal
+	for _, enemy in pairs(GetEnemyHeroes()) do
+		if WMenu.KS.KSQ:Value() and Ready(_Q) and ValidTarget(enemy, QRange) then
+			if GetCurrentHP(enemy) + GetHPRegen(enemy) + GetDmgShield(enemy) <= QDmg(enemy) then
+				CastSpell(_Q)
+				AttackUnit(enemy)
+			end
+		end
+
+		if WMenu.KS.KSE:Value() and Ready(_E) and ValidTarget(enemy, ERange) then
+			if GetCurrentHP(enemy) + GetHPRegen(enemy) + GetDmgShield(enemy) <= EDmg(enemy) then
+				CastTargetSpell(enemy, _E)
+			end
+		end
+
+		-- Auto Ignite
+		if GetCastName(myHero, SUMMONER_1):lower():find("summonerdot") then
+			if WMenu.M.AI:Value() and Ready(SUMMONER_1) and ValidTarget(enemy, 600) then
+				if GetCurrentHP(enemy) + GetShieldDmg(enemy) + GetHPRegen(enemy) <= IDamage then
+					CastTargetSpell(enemy, SUMMONER_1)
+				end
+			end
+		end
+	
+		if GetCastName(myHero, SUMMONER_2):lower():find("summonerdot") then
+			if WMenu.M.AI:Value() and Ready(SUMMONER_2) and ValidTarget(enemy, 600) then
+				if GetCurrentHP(enemy) + GetDmgShield(enemy) + GetHPRegen(enemy) <= IDamage then
+					CastTargetSpell(enemy, SUMMONER_2)
+				end
+			end
+		end
+	end
+
+	-- Auto R
+	if WMenu.M.AR:Value() and Ready(_R) then
+		if EnemiesAround(myHero, RRange) >= WMenu.M.ARC:Value() then
+			CastSpell(_R)
+		end	
+	end
+	
+	-- Auto W
+	if WMenu.M.AW:Value() and Ready(_W) then
+		if EnemiesAround(myHero, 700) >= 1 and GetPercentHP(myHero) <= WMenu.M.AWC:Value() then
+			CastSpell(_W)
+		end	
+	end
+	
+	-- Escape
+	if WMenu.E.EK:Value() then	
+		MoveToXYZ(GetMousePos())
+		for _, EMinion in pairs(minionManager.objects) do
+			if WMenu.E.EE:Value() and Ready(_E) and ValidTarget(EMinion, ERange) and EnemiesAround(myHero, 1000) > 0 and EnemiesAround(EMinion, 800) < 1 then
+				CastTargetSpell(EMinion, _E)
+				elseif WMenu.E.EYGB:Value() and YGB > 0 and Ready(YGB) and EnemiesAround(myHero, 1000) > 0 then
+				CastSpell(YGB)
+			end
+		end		
+	end
+	
+	for _, jung in pairs(minionManager.objects) do
+		if GetCastName(myHero, SUMMONER_1):lower():find("summonersmite") then
+			if WMenu.AutoSmite.ASG:Value() and GetObjectName(jung):lower():find("sru_gromp") and Ready(SUMMONER_1) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+			CastTargetSpell(jung, SUMMONER_1)
+			elseif WMenu.AutoSmite.ASK:Value() and GetObjectName(jung):lower():find("sru_krug") and Ready(SUMMONER_1) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+			CastTargetSpell(jung, SUMMONER_1)
+			elseif WMenu.AutoSmite.ASD:Value() and GetObjectName(jung):lower():find("sru_dragon") and Ready(SUMMONER_1) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+			CastTargetSpell(jung, SUMMONER_1)
+			elseif WMenu.AutoSmite.ASB:Value() and GetObjectName(jung):lower():find("sru_blue") and Ready(SUMMONER_1) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+			CastTargetSpell(jung, SUMMONER_1)
+			elseif WMenu.AutoSmite.ASR:Value() and GetObjectName(jung):lower():find("sru_red") and Ready(SUMMONER_1) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+			CastTargetSpell(jung, SUMMONER_1)
+			elseif WMenu.AutoSmite.ASBA:Value() and GetObjectName(jung):lower():find("sru_baron") and Ready(SUMMONER_1) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+			CastTargetSpell(jung, SUMMONER_1)
+			end
+		end
+		
+		if GetCastName(myHero, SUMMONER_2):lower():find("summonersmite") then
+			if WMenu.AutoSmite.ASG:Value() and GetObjectName(jung):lower():find("sru_gromp") and Ready(SUMMONER_2) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+				CastTargetSpell(jung, SUMMONER_2)
+				elseif WMenu.AutoSmite.ASK:Value() and GetObjectName(jung):lower():find("sru_krug") and Ready(SUMMONER_2) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+				CastTargetSpell(jung, SUMMONER_2)
+				elseif WMenu.AutoSmite.ASD:Value() and GetObjectName(jung):lower():find("sru_dragon") and Ready(SUMMONER_2) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+				CastTargetSpell(jung, SUMMONER_2)
+				elseif WMenu.AutoSmite.ASB:Value() and GetObjectName(jung):lower():find("sru_blue") and Ready(SUMMONER_2) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+				CastTargetSpell(jung, SUMMONER_2)
+				elseif WMenu.AutoSmite.ASR:Value() and GetObjectName(jung):lower():find("sru_red") and Ready(SUMMONER_2) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+				CastTargetSpell(jung, SUMMONER_2)
+				elseif WMenu.AutoSmite.ASBA:Value() and GetObjectName(jung):lower():find("sru_baron") and Ready(SUMMONER_2) and ValidTarget(jung, 500) and GetCurrentHP(jung) <= smd then
+				CastTargetSpell(jung, SUMMONER_2)
+			end
+		end
+	end
+end)	
+
+-- Auto QSS
+OnUpdateBuff(function(unit, buff)
+	local QSS = GetItemSlot(myHero, 3140)
+	local MercSkimm = GetItemSlot(myHero, 3139)
+	if unit.isMe and CCType[buff.Type] and WMenu.M.QSS:Value() and QSS > 0 and Ready(QSS) then
+		if GetPercentHP(myHero) <= WMenu.M.QSSC:Value() and EnemiesAround(myHero, 900) >= 1 then
+			CastSpell(QSS)
+		end	
+	end
+	
+	if unit.isMe and CCType[buff.Type] and WMenu.M.QSS:Value() and MercSkimm > 0 and Ready(MercSkimm) then
+		if GetPercentHP(myHero) <= WMenu.M.QSSC:Value() and EnemiesAround(myHero, 900) >= 1 then
+			CastSpell(MercSkimm)
+		end
+	end
 end)
-  
-WukongMenu:SubMenu("SkinChanger", "SkinChanger")
-  skinMeta = {["WukongMenu"] = {"Classic", "Volcanic", "General", "Jade Dragon", "Underworld", "Radiant"}}
-  WukongMenu.SkinChanger:DropDown('skin', myHero.charName.. " Skins", 1, skinMeta[myHero.charName],function(model)
-        HeroSkinChanger(myHero, model - 1) print(skinMeta[myHero.charName][model] .." ".. myHero.charName .. " Loaded!") 
-    end,
-true)
+
+-- Drawings
+OnDraw(function()
+	if IsObjectAlive(myHero) then
+		if WMenu.D.DQ:Value() then DrawCircle(myHero, QRange, 1, 25, GoS.Red) end
+		if WMenu.D.DE:Value() then DrawCircle(myHero, ERange, 1, 25, GoS.Cyan) end
+		if WMenu.D.DAA:Value() then DrawCircle(myHero, AARange, 1, 25, GoS.White) end
+		if WMenu.D.DR:Value() then DrawCircle(myHero, RRange, 1, 25, GoS.Pink) end
+		
+		for _, enemy in pairs(GetEnemyHeroes()) do
+			if WMenu.D.DD:Value() then
+				if Ready(_Q) and not Ready(_E) and not Ready(_R) then DrawDmgOverHpBar(enemy, GetCurrentHP(enemy), QDmg(enemy), 0, GoS.White)
+					elseif Ready(_Q) and Ready(_E) and not Ready(_R) then DrawDmgOverHpBar(enemy, GetCurrentHP(enemy), QDmg(enemy) + EDmg(enemy), 0, GoS.White)
+					elseif Ready(_Q) and not Ready(_E) and Ready(_R) then DrawDmgOverHpBar(enemy, GetCurrentHP(enemy), QDmg(enemy) + RDmg(enemy), 0, GoS.White)
+					elseif Ready(_Q) and Ready(_E) and Ready(_R) then DrawDmgOverHpBar(enemy, GetCurrentHP(enemy), QDmg(enemy) + EDmg(enemy) + RDmg(enemy), 0, GoS.White)
+					elseif not Ready(_Q) and Ready(_E) and not Ready(_R) then DrawDmgOverHpBar(enemy, GetCurrentHP(enemy), EDmg(enemy) + RDmg(enemy), 0, GoS.White)
+					elseif not Ready(_Q) and not Ready(_E) and Ready(_R) then DrawDmgOverHpBar(enemy, GetCurrentHP(enemy), RDmg(enemy), 0, GoS.White)
+					elseif not Ready(_Q) and Ready(_E) and Ready(_R) then DrawDmgOverHpBar(enemy, GetCurrentHP(enemy), RDmg(enemy) + EDmg(enemy), 0, GoS.White)
+				end
+			end
+		end
+	end	
+end)		
+
+--Some Stuff	
+OnProcessSpell(function(unit, spell)
+	if unit.isMe and spell.name:lower():find("tiamatcleave") then
+		ResetAA()
+	end
+	
+	if unit.isMe and spell.name:lower():find("monkeykingq") then
+		ResetAA()
+	end
+	
+	if Mode() == "LaneClear" then
+		if unit.isMinion and GetTeam(unit) == 300 and not GetObjectName(unit):lower():find("mini") and spell.target.isMe then
+			if WMenu.JC.JCW:Value() and Ready(_W) and GetPercentMP(myHero) >= WMenu.JC.JCMM:Value() then
+				DelayAction(function()
+					CastSpell(_W)
+				end, spell.windUpTime / 1.5)
+			end
+		end		
+	end
+	
+	if unit.isMe and spell.name:lower():find("monkeykingspintowin") then
+		if YGB > 0 and Ready(YGB) then
+			CastSpell(YGB)
+		end	
+	end
+end)	
+
+-- AA Resets
+OnProcessSpellComplete(function(unit, spell)
+	if Mode() == "Combo" then
+		if unit.isMe and spell.target.isHero and IsObjectAlive(spell.target) then
+			if spell.name:lower():find("basicattack") and WMenu.C.CQ:Value() and WMenu.C.CQC:Value() == 2 then
+				if Ready(_Q) and GetPercentMP(myHero) >= WMenu.C.CMM:Value() then
+					CastSpell(_Q)
+				end
+			end
+
+			if spell.name:lower():find("basicattack") then
+				if WMenu.C.CTH:Value() and not Ready(_Q) and TH > 0 and Ready(TH) then
+					CastSpell(TH)
+					elseif WMenu.C.CRH:Value() and not Ready(_Q) and RH > 0 and Ready(RH) then
+					CastSpell(RH)
+					elseif WMenu.C.CRH:Value() and not Ready(_Q) and T > 0 and Ready(T) then
+					CastSpell(T)
+				end
+			end		
+		
+			if spell.name:lower():find("monkeykingq") then
+				if WMenu.C.CTH:Value() and TH > 0 and Ready(TH) then
+					CastSpell(TH)
+					elseif WMenu.C.CRH:Value() and RH > 0 and Ready(RH) then
+					CastSpell(RH)
+					elseif WMenu.C.CRH:Value() and T > 0 and Ready(T) then
+					CastSpell(T)
+				end
+			end	
+		end
+	end
+
+	if Mode() == "Harass" then
+		if unit.isMe and spell.target.isHero and IsObjectAlive(spell.target) then
+			if spell.name:lower():find("basicattack") and WMenu.H.HQ:Value() and WMenu.H.HQC:Value() == 2 then
+				if Ready(_Q) and GetPercentMP(myHero) >= WMenu.H.HMM:Value() then
+					CastSpell(_Q)
+				end
+			end
+
+			if spell.name:lower():find("basicattack") then
+				if WMenu.H.HTH:Value() and not Ready(_Q) and TH > 0 and Ready(TH) then
+					CastSpell(TH)
+					elseif WMenu.H.HRH:Value() and not Ready(_Q) and RH > 0 and Ready(RH) then
+					CastSpell(RH)
+					elseif WMenu.H.HRH:Value() and not Ready(_Q) and T > 0 and Ready(T) then
+					CastSpell(T)
+				end
+			end
+
+			if spell.name:lower():find("monkeykingq") then
+				if WMenu.H.HTH:Value() and TH > 0 and Ready(TH) then
+					CastSpell(TH)
+					elseif WMenu.H.HRH:Value() and RH > 0 and Ready(TH) then
+					CastSpell(RH)
+					elseif WMenu.H.HRH:Value() and T > 0 and Ready(T) then
+					CastSpell(T)
+				end
+			end
+		end
+	end
+
+	if Mode() == "LaneClear" then
+		if unit.isMe and spell.target.isMinion and GetTeam(spell.target) == MINION_ENEMY and IsObjectAlive(spell.target) then
+			if spell.name:lower():find("basicattack") and WMenu.LC.LCQ:Value() then
+				if Ready(_Q) and GetPercentMP(myHero) >= WMenu.LC.LCMM:Value() then
+					CastSpell(_Q)
+				end
+			end
+			
+			if spell.name:lower():find("basicattack") then
+				if WMenu.LC.LCTH:Value() and not Ready(_Q) and TH > 0 and Ready(TH) and MinionsAround(spell.target, 700, MINION_ENEMY) > 1 then
+					CastSpell(TH)
+					elseif WMenu.LC.LCRH:Value() and not Ready(_Q) and RH > 0 and Ready(RH) and MinionsAround(myHero, 400, MINION_ENEMY) > 1 then
+					CastSpell(RH)
+					elseif WMenu.LC.LCRH:Value() and not Ready(_Q) and T > 0 and Ready(T) and MinionsAround(myHero, 400, MINION_ENEMY) > 1 then
+					CastSpell(T)
+				end
+			end
+
+			if spell.name:lower():find("monkeykingq") then
+				if WMenu.LC.LCTH:Value() and TH > 0 and Ready(TH) and MinionsAround(spell.target, 700, MINION_ENEMY) > 1 then
+					CastSpell(TH)
+					elseif WMenu.LC.LCRH:Value() and RH > 0 and Ready(RH) and MinionsAround(myHero, 400, MINION_ENEMY) > 1 then
+					CastSpell(RH)
+					elseif WMenu.LC.LCRH:Value() and T > 0 and Ready(T) and MinionsAround(myHero, 400, MINION_ENEMY) > 1 then
+					CastSpell(T)
+				end
+			end
+		end
+
+		if unit.isMe and spell.target.isMinion and GetTeam(spell.target) == 300 and IsObjectAlive(spell.target) and not GetObjectName(spell.target):lower():find("mini") then
+			if spell.name:lower():find("basicattack") and WMenu.JC.JCQ:Value() then
+				if Ready(_Q) and GetPercentMP(myHero) >= WMenu.JC.JCMM:Value() then
+					CastSpell(_Q)
+				end
+			end
+
+			if spell.name:lower():find("basicattack") then
+				if WMenu.JC.JCTH:Value()and not Ready(_Q) and TH > 0 and Ready(TH) then
+					CastSpell(TH)
+					elseif WMenu.JC.JCRH:Value() and not Ready(_Q) and RH > 0 and Ready(RH) then
+					CastSpell(RH)
+					elseif WMenu.JC.JCRH:Value() and not Ready(_Q) and T > 0 and Ready(T) then
+					CastSpell(T)
+				end
+			end
+		
+			if spell.name:lower():find("monkeykingq") then
+				if WMenu.JC.JCTH:Value() and TH > 0 and Ready(TH) then
+					CastSpell(TH)
+					elseif WMenu.JC.JCRH:Value() and RH > 0 and Ready(RH) then
+					CastSpell(RH)
+					elseif WMenu.JC.JCRH:Value() and T > 0 and Ready(T) then
+					CastSpell(T)
+				end
+			end		
+		end
+	end
+
+	if unit.isMe and spell.name:lower():find("basicattack") and spell.target.name:lower():find("turret") and Ready(_Q) then
+		CastSpell(_Q)
+	end
+end)
+
+print("Thanks For Using WukongTopper, Have Fun " ..myHero.name.. " :)")	
