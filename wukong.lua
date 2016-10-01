@@ -9,6 +9,7 @@ function AutoUpdate(data)
         PrintChat("No updates found!")
     end
 end
+PrintChat("eawewae")
 
 require('OpenPredict')
 
