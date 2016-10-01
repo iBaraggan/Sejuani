@@ -1,4 +1,5 @@
 if GetObjectName(myHero) ~= "MonkeyKing" then return end
+
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
         PrintChat("New version found! " .. data)
@@ -13,7 +14,7 @@ require('OpenPredict')
 
 print("SejuaniTopper // By:ekkekk")
 
-local WukongMenu = Menu("Wukong", "Wukong")
+local WukongMenu = Menu("Macaco", "Macaco")
 
   WukongMenu:Menu("Combo", "Combo")
   WukongMenu.Combo:Boolean("useQ", "Use Q", true)
@@ -23,17 +24,11 @@ local WukongMenu = Menu("Wukong", "Wukong")
   WukongMenu.Combo:Boolean("useTiamat", "Use Tiamat", true)
   WukongMenu.Combo:Boolean("useTitanic", "Use Titanic Hydra", true)
 
-  WukongMenu:SubMenu("Combo,Combo")
-  WukongMenu.Combo:Boolean("Q", "Use Q in Combo", true)
-  WukongMenu.Combo:Boolean("W", "Use W in Combo", true)
-  WukongMenu.Combo:Boolean("E", "Use E in Combo", true)
-  WukongMenu.Combo:Boolean("R", "Use R in Combo", true)
-
 OnTick(function()
 
     if IOW:Mode() == "Combo" then
 
-    if WukongMenu.ComboMode.EQW:Value() then
+    if WukongMenu.Combo.EQW:Value() then
       
       if WukongMenu.Combo.E:Value() and Ready(_E) and ValidTarget(target, ERange) then
         CastTargetSpell(target, _E)
@@ -52,7 +47,7 @@ OnTick(function()
     end
 
     
-    if WukongMenu.ComboMode.EWQ:Value() then
+    if WukongMenu.Combo.EWQ:Value() then
       
       if WukongMenu.Combo.E:Value() and Ready(_E) and ValidTarget(target, ERange) then
         CastTargetSpell(target, _E)
